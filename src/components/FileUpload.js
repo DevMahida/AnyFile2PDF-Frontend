@@ -64,7 +64,6 @@ function FileUpload() {
         convertEndpoint,
         formData,
         {
-          timeout: 90000,
           onUploadProgress: (progressEvent) => {
             if (!progressEvent.total) {
               return;
@@ -97,7 +96,7 @@ function FileUpload() {
         setErrorMessage(`Conversion failed (HTTP ${statusCode}). Check backend URL/env on Vercel.`);
       } else {
         setErrorMessage(
-          "Could not reach conversion API. Check REACT_APP_API_BASE_URL and backend CORS on Render."
+          "Could not reach conversion API. Render free instances may take time to wake up; please retry in a few seconds."
         );
       }
     } finally {
