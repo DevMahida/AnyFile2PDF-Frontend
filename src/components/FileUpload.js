@@ -10,7 +10,10 @@ function FileUpload() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragActive, setIsDragActive] = useState(false);
 
-  const apiBaseUrl = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/$/, "");
+  const apiBaseUrl = (
+    process.env.REACT_APP_API_BASE_URL
+    || (process.env.NODE_ENV === "production" ? "https://anyfile2pdf-backend.onrender.com" : "")
+  ).replace(/\/$/, "");
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -56,10 +59,13 @@ function FileUpload() {
     formData.append("file", file);
 
     try {
+      const convertEndpoint = `${apiBaseUrl}/convert`;
+
       const res = await axios.post(
-        `${apiBaseUrl}/convert`,
+        convertEndpoint,
         formData,
         {
+          timeout: 90000,
           onUploadProgress: (progressEvent) => {
             if (!progressEvent.total) {
               return;
@@ -84,12 +90,15 @@ function FileUpload() {
       setDownloadLink(normalizedLink);
     } catch (error) {
       const backendDetail = error?.response?.data?.detail;
+      const statusCode = error?.response?.status;
 
       if (backendDetail) {
         setErrorMessage(String(backendDetail));
+      } else if (statusCode) {
+        setErrorMessage(`Conversion failed (HTTP ${statusCode}). Check backend URL/env on Vercel.`);
       } else {
         setErrorMessage(
-          "Could not reach the conversion API. Make sure backend is running on port 8000."
+          "Could not reach conversion API. Check REACT_APP_API_BASE_URL and backend CORS on Render."
         );
       }
     } finally {
