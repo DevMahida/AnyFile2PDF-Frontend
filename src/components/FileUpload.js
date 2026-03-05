@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const DEFAULT_API_BASE_URL = "https://anyfile2pdf-backend.onrender.com";
+
 function FileUpload() {
 
   const [file, setFile] = useState(null);
@@ -10,10 +12,7 @@ function FileUpload() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragActive, setIsDragActive] = useState(false);
 
-  const apiBaseUrl = (
-    process.env.REACT_APP_API_BASE_URL
-    || (process.env.NODE_ENV === "production" ? "https://anyfile2pdf-backend.onrender.com" : "")
-  ).replace(/\/$/, "");
+  const apiBaseUrl = (process.env.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, "");
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
