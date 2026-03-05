@@ -19,6 +19,8 @@ function FileUpload() {
     if (selectedFile) {
       setFile(selectedFile);
       setErrorMessage("");
+      setDownloadLink("");
+      setUploadProgress(0);
     }
   };
 
@@ -40,6 +42,8 @@ function FileUpload() {
     if (droppedFile) {
       setFile(droppedFile);
       setErrorMessage("");
+      setDownloadLink("");
+      setUploadProgress(0);
     }
   };
 
