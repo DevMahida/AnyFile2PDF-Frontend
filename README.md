@@ -1,105 +1,73 @@
 # AnyFile2PDF Frontend
 
-## Deploy (Recommended: Render)
+React frontend for uploading files and converting them to PDF through the AnyFile2PDF backend API.
 
-This frontend is in a separate folder/repo from backend in your local setup.
-You should deploy backend and frontend as two services.
+## Features
 
-### 1) Deploy Backend (from `../backend`)
+- Drag-and-drop file upload UI
+- Progress indicator during upload
+- Conversion support UI for PNG/JPG, CSV, DOCX/PPTX/XLSX, and IPYNB
+- Download link generation from backend response
+- Responsive layout for desktop and mobile
 
-- Create a GitHub repo for backend folder contents.
-- Push backend files including `Dockerfile` and `requirements.txt`.
-- In Render:
-	- New + > Web Service
-	- Connect backend repo
-	- Environment: `Docker`
-	- Port: `8000`
-	- Optional env var: `CORS_ALLOW_ORIGINS=https://your-frontend-domain.onrender.com`
+## Tech Stack
 
-### 2) Deploy Frontend (this repo)
+- React (Create React App)
+- Axios
+- Bootstrap
 
-- In Render:
-	- New + > Static Site
-	- Connect this frontend repo
-	- Build Command: `npm ci && npm run build`
-	- Publish Directory: `build`
-	- Environment Variable: `REACT_APP_API_BASE_URL=https://your-backend-service.onrender.com`
+## Local Development
 
-### 3) Verify
+### Prerequisites
 
-- Open frontend URL.
-- Upload sample files for PNG/CSV/DOCX/IPYNB conversions.
-- Confirm download links point to backend domain.
+- Node.js 18+ (recommended)
+- npm
 
----
+### Run
 
-# Getting Started with Create React App
+```bash
+npm install
+npm start
+```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+App runs at `http://localhost:3000`.
 
-## Available Scripts
+## Environment Variables
 
-In the project directory, you can run:
+The frontend reads the backend API from `REACT_APP_API_BASE_URL`.
 
-### `npm start`
+Example:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```env
+REACT_APP_API_BASE_URL=https://anyfile2pdf-backend.onrender.com
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+If not provided, the app uses the default production backend URL configured in code.
 
-### `npm test`
+## Build
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm run build
+```
 
-### `npm run build`
+Production output is generated in the `build/` folder.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deployment
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Vercel (Recommended for Frontend)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Import this repository in Vercel.
+2. Ensure environment variable is set:
+   `REACT_APP_API_BASE_URL=https://anyfile2pdf-backend.onrender.com`
+3. Deploy.
 
-### `npm run eject`
+### Render Static Site (Alternative)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Build command: `npm ci && npm run build`
+- Publish directory: `build`
+- Set the same `REACT_APP_API_BASE_URL` environment variable.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Repository
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Frontend repo: `https://github.com/DevMahida/AnyFile2PDF-Frontend`
+- Backend repo: `https://github.com/DevMahida/AnyFile2PDF-Backend`
