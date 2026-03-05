@@ -10,7 +10,7 @@ function FileUpload() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragActive, setIsDragActive] = useState(false);
 
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "";
+  const apiBaseUrl = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/$/, "");
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];

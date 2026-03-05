@@ -1,3 +1,38 @@
+# AnyFile2PDF Frontend
+
+## Deploy (Recommended: Render)
+
+This frontend is in a separate folder/repo from backend in your local setup.
+You should deploy backend and frontend as two services.
+
+### 1) Deploy Backend (from `../backend`)
+
+- Create a GitHub repo for backend folder contents.
+- Push backend files including `Dockerfile` and `requirements.txt`.
+- In Render:
+	- New + > Web Service
+	- Connect backend repo
+	- Environment: `Docker`
+	- Port: `8000`
+	- Optional env var: `CORS_ALLOW_ORIGINS=https://your-frontend-domain.onrender.com`
+
+### 2) Deploy Frontend (this repo)
+
+- In Render:
+	- New + > Static Site
+	- Connect this frontend repo
+	- Build Command: `npm ci && npm run build`
+	- Publish Directory: `build`
+	- Environment Variable: `REACT_APP_API_BASE_URL=https://your-backend-service.onrender.com`
+
+### 3) Verify
+
+- Open frontend URL.
+- Upload sample files for PNG/CSV/DOCX/IPYNB conversions.
+- Confirm download links point to backend domain.
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
