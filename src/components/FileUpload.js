@@ -15,9 +15,19 @@ function FileUpload() {
 
   const apiBaseUrl = (process.env.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, "");
 
+  const buildFallbackPdfName = (originalName) => {
+    const name = (originalName || "converted_file").trim();
+    const dotIndex = name.lastIndexOf(".");
+    const stem = dotIndex > 0 ? name.slice(0, dotIndex) : name;
+    const cleaned = stem.replace(/[^A-Za-z0-9._ -]/g, "_").trim().replace(/\.+$/, "");
+    return `${cleaned || "converted_file"}.pdf`;
+  };
+
+  const isBlobUrl = (url) => typeof url === "string" && url.startsWith("blob:");
+
   useEffect(() => {
     return () => {
-      if (downloadLink) {
+      if (isBlobUrl(downloadLink)) {
         URL.revokeObjectURL(downloadLink);
       }
     };
@@ -39,6 +49,23 @@ function FileUpload() {
     }
 
     return "converted_file.pdf";
+  };
+
+  const extractFilenameFromUrl = (urlValue, fallback) => {
+    if (!urlValue) {
+      return fallback;
+    }
+
+    try {
+      const parsed = new URL(urlValue, apiBaseUrl);
+      const lastSegment = parsed.pathname.split("/").filter(Boolean).pop();
+      if (!lastSegment) {
+        return fallback;
+      }
+      return decodeURIComponent(lastSegment);
+    } catch {
+      return fallback;
+    }
   };
 
   const readBlobErrorMessage = async (error) => {
@@ -96,10 +123,11 @@ function FileUpload() {
     }
 
     setErrorMessage("");
-    if (downloadLink) {
+    if (isBlobUrl(downloadLink)) {
       URL.revokeObjectURL(downloadLink);
     }
     setDownloadLink("");
+    setDownloadName(buildFallbackPdfName(file.name));
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -124,10 +152,31 @@ function FileUpload() {
         }
       );
 
-      const contentType = res?.headers?.["content-type"] || "application/pdf";
+      const contentType = (res?.headers?.["content-type"] || "").toLowerCase();
       const disposition = res?.headers?.["content-disposition"];
-      const filename = extractFilenameFromDisposition(disposition);
-      const pdfBlob = new Blob([res.data], { type: contentType });
+      const fallbackName = buildFallbackPdfName(file.name);
+
+      if (contentType.includes("application/json")) {
+        const text = await res.data.text();
+        const parsed = JSON.parse(text);
+        const pdfUrl = parsed?.pdf_url;
+
+        if (!pdfUrl) {
+          setErrorMessage("Conversion succeeded but no PDF link was returned.");
+          return;
+        }
+
+        const normalizedLink = pdfUrl.startsWith("http")
+          ? pdfUrl
+          : `${apiBaseUrl}${pdfUrl}`;
+
+        setDownloadName(extractFilenameFromUrl(normalizedLink, fallbackName));
+        setDownloadLink(normalizedLink);
+        return;
+      }
+
+      const filename = extractFilenameFromDisposition(disposition) || fallbackName;
+      const pdfBlob = new Blob([res.data], { type: "application/pdf" });
       const objectUrl = URL.createObjectURL(pdfBlob);
 
       setDownloadName(filename);
