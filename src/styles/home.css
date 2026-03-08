@@ -219,7 +219,13 @@ body::after {
   justify-content: center;
   text-align: center;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   transition: 0.25s ease;
+}
+
+.drop-zone * {
+  cursor: pointer;
 }
 
 .drop-zone:hover,

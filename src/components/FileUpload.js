@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const DEFAULT_API_BASE_URL = "https://anyfile2pdf-backend.onrender.com";
@@ -7,12 +7,54 @@ function FileUpload() {
 
   const [file, setFile] = useState(null);
   const [downloadLink, setDownloadLink] = useState("");
+  const [downloadName, setDownloadName] = useState("converted_file.pdf");
   const [errorMessage, setErrorMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragActive, setIsDragActive] = useState(false);
 
   const apiBaseUrl = (process.env.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, "");
+
+  useEffect(() => {
+    return () => {
+      if (downloadLink) {
+        URL.revokeObjectURL(downloadLink);
+      }
+    };
+  }, [downloadLink]);
+
+  const extractFilenameFromDisposition = (headerValue) => {
+    if (!headerValue) {
+      return "converted_file.pdf";
+    }
+
+    const utf8Match = headerValue.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) {
+      return decodeURIComponent(utf8Match[1]);
+    }
+
+    const plainMatch = headerValue.match(/filename="?([^";]+)"?/i);
+    if (plainMatch?.[1]) {
+      return plainMatch[1];
+    }
+
+    return "converted_file.pdf";
+  };
+
+  const readBlobErrorMessage = async (error) => {
+    const blobData = error?.response?.data;
+    if (!(blobData instanceof Blob)) {
+      return null;
+    }
+
+    try {
+      const text = await blobData.text();
+      const parsed = JSON.parse(text);
+      return parsed?.detail ? String(parsed.detail) : null;
+    } catch {
+      return null;
+    }
+  };
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -54,6 +96,9 @@ function FileUpload() {
     }
 
     setErrorMessage("");
+    if (downloadLink) {
+      URL.revokeObjectURL(downloadLink);
+    }
     setDownloadLink("");
     setIsUploading(true);
     setUploadProgress(0);
@@ -68,6 +113,7 @@ function FileUpload() {
         convertEndpoint,
         formData,
         {
+          responseType: "blob",
           onUploadProgress: (progressEvent) => {
             if (!progressEvent.total) {
               return;
@@ -78,20 +124,16 @@ function FileUpload() {
         }
       );
 
-      const pdfUrl = res?.data?.pdf_url;
+      const contentType = res?.headers?.["content-type"] || "application/pdf";
+      const disposition = res?.headers?.["content-disposition"];
+      const filename = extractFilenameFromDisposition(disposition);
+      const pdfBlob = new Blob([res.data], { type: contentType });
+      const objectUrl = URL.createObjectURL(pdfBlob);
 
-      if (!pdfUrl) {
-        setErrorMessage("Conversion succeeded but no PDF link was returned.");
-        return;
-      }
-
-      const normalizedLink = pdfUrl.startsWith("http")
-        ? pdfUrl
-        : `${apiBaseUrl}${pdfUrl}`;
-
-      setDownloadLink(normalizedLink);
+      setDownloadName(filename);
+      setDownloadLink(objectUrl);
     } catch (error) {
-      const backendDetail = error?.response?.data?.detail;
+      const backendDetail = await readBlobErrorMessage(error);
       const statusCode = error?.response?.status;
 
       if (backendDetail) {
@@ -161,6 +203,7 @@ function FileUpload() {
           <a
             className="btn download-btn"
             href={downloadLink}
+            download={downloadName}
           >
             Download PDF
           </a>

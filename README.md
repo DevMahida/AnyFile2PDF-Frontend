@@ -42,7 +42,7 @@ Example:
 REACT_APP_API_BASE_URL=https://anyfile2pdf-backend.onrender.com
 ```
 
-If not provided, the app uses the default production backend URL configured in code.
+If not provided, the app uses the default Render backend URL configured in code.
 
 ## Build
 
