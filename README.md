@@ -7,7 +7,8 @@ React frontend for uploading files and converting them to PDF through the AnyFil
 - Drag-and-drop file upload UI
 - Progress indicator during upload
 - Conversion support UI for PNG/JPG, CSV, DOCX/PPTX/XLSX, and IPYNB
-- Download link generation from backend response
+- Direct PDF download from backend `/convert` response (blob)
+- Simplified sticky header with brand-only navigation
 - Responsive layout for desktop and mobile
 
 ## Tech Stack

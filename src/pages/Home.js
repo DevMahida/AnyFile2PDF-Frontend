@@ -7,7 +7,7 @@ function Home() {
   return (
     <div className="landing-root">
       <header className="site-header sticky-top">
-        <nav className="container navbar navbar-expand-lg py-3">
+        <nav className="container navbar py-3">
           <a className="navbar-brand brand-mark" href="#home" aria-label="AnyFile2PDF Home">
             <img
               src={logo}
@@ -16,24 +16,6 @@ function Home() {
             />
             <h4 className="brand-title gradient-text mb-0">AnyFile2PDF</h4>
           </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#mainNav"
-            aria-controls="mainNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-          <div className="collapse navbar-collapse" id="mainNav">
-            <ul className="navbar-nav ms-auto gap-lg-2">
-              <li className="nav-item"><a className="nav-link" href="#home">Home</a></li>
-              <li className="nav-item"><a className="nav-link" href="#convert">Convert</a></li>
-              <li className="nav-item"><a className="nav-link" href="#features">Features</a></li>
-            </ul>
-          </div>
         </nav>
       </header>
 
